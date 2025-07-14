@@ -84,9 +84,10 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="relative flex min-h-screen flex-col bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20">
+      <main className="relative flex min-h-screen flex-col bg-gradient-to-br from-gray-900 via-purple-900/30 to-pink-900/30">
         <div className="flex-1">
           <Canvas shadows camera={{ position: [0, 0, 8], fov: 43 }}>
-            <color attach="background" args={["#fdf2f8"]} />
+            <color attach="background" args={["#1e1b4b"]} />
             <OrbitControls />
             <Avatar currentMessage={currentMessage} groupConfig={groupConfig} />
             <Environment preset="apartment" />
@@ -99,17 +100,17 @@ export default function Home() {
           <div className="flex-grow overflow-y-auto p-6">
             <div className="max-w-4xl mx-auto text-center">
               <div className="flex items-center justify-center mb-4">
-                <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full shadow-lg">
+                <div className="flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full shadow-2xl shadow-purple-500/25">
                   <HeartPulse className="h-8 w-8 text-white" />
                 </div>
               </div>
-              <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
+              <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
                 Mental Health Support
               </h1>
-              <p className="text-lg text-gray-600 dark:text-gray-300 mb-2">
+              <p className="text-xl text-gray-200 mb-3">
                 Compassionate support for your mental wellness journey
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+              <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed">
                 Share your feelings with MediMind and receive coping strategies, relaxation techniques, 
                 and emotional support in a safe, judgment-free environment.
               </p>
@@ -121,13 +122,13 @@ export default function Home() {
               <PopoverTrigger asChild>
                 <Button 
                   size="lg"
-                  className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-200 rounded-full px-6 py-3"
+                  className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white shadow-2xl shadow-purple-500/25 hover:shadow-purple-500/40 transform hover:scale-110 transition-all duration-300 rounded-full px-8 py-4 text-lg border border-purple-400/20"
                 >
                   <MessageSquare className="mr-2 h-5 w-5" /> 
                   Talk to MediMind
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="mb-2 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-2 border-purple-200/50 dark:border-purple-700/50 shadow-2xl rounded-2xl">
+              <PopoverContent className="mb-2 w-full bg-gray-900/95 backdrop-blur-lg border-2 border-purple-400/30 shadow-2xl shadow-purple-500/10 rounded-2xl">
                 <Chat
                   type="Support"
                   botConversationTrigger={botConversationTrigger}

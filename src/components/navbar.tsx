@@ -15,20 +15,20 @@ export function MainNav() {
       <div className="flex justify-between items-center gap-6 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg px-6 lg:px-10 py-4 border-b border-gray-200/50 dark:border-gray-700/50">
         <Link href="/" className="flex items-center space-x-3 group">
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full blur-lg opacity-40 group-hover:opacity-60 transition-all duration-300 animate-pulse"></div>
             <Image 
-              src="/logo.png" 
-              width={40} 
-              height={40} 
+              src="/medical-logo.svg" 
+              width={45} 
+              height={45} 
               alt="Logo" 
-              className="relative rounded-full border-2 border-white dark:border-gray-700 shadow-lg"
+              className="relative rounded-full shadow-2xl transform group-hover:scale-110 transition-transform duration-300"
             />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="font-bold text-xl bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               MediMind
             </span>
-            <span className="text-xs text-gray-500 dark:text-gray-400 -mt-1">
+            <span className="text-xs text-gray-400 -mt-1 font-medium">
               Healthcare AI
             </span>
           </div>
@@ -49,18 +49,18 @@ export function MainNav() {
           <nav className="flex items-center space-x-6">
             <Link 
               href="/query" 
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200"
+              className="text-gray-300 hover:text-blue-400 font-medium transition-all duration-200 hover:scale-105 px-3 py-2 rounded-lg hover:bg-blue-500/10"
             >
               Medical Queries
             </Link>
             <Link 
               href="/support" 
-              className="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors duration-200"
+              className="text-gray-300 hover:text-purple-400 font-medium transition-all duration-200 hover:scale-105 px-3 py-2 rounded-lg hover:bg-purple-500/10"
             >
               Mental Health
             </Link>
           </nav>
-          <div className="w-px h-6 bg-gray-300 dark:bg-gray-600"></div>
+          <div className="w-px h-6 bg-gray-600"></div>
           <ModeToggle />
         </div>
         

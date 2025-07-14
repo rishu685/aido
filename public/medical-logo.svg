@@ -1,0 +1,33 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="60" cy="60" r="58" fill="url(#gradient1)" stroke="url(#gradient2)" stroke-width="4"/>
+  
+  <!-- Medical Cross -->
+  <rect x="52" y="30" width="16" height="60" rx="2" fill="white"/>
+  <rect x="30" y="52" width="60" height="16" rx="2" fill="white"/>
+  
+  <!-- Heart Symbol -->
+  <path d="M45 45C45 40 50 35 60 40C70 35 75 40 75 45C75 55 60 70 60 70S45 55 45 45Z" fill="url(#heartGradient)" opacity="0.8"/>
+  
+  <!-- Brain Outline -->
+  <path d="M35 35C35 30 40 25 50 25C55 20 65 20 70 25C80 25 85 30 85 35C85 40 80 45 75 45C80 50 85 55 85 60C85 65 80 70 70 70C65 75 55 75 50 70C40 70 35 65 35 60C35 55 40 50 45 50C40 45 35 40 35 35Z" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" fill="none"/>
+  
+  <!-- Pulse Line -->
+  <path d="M20 60L30 60L35 45L40 75L45 30L50 90L55 60L90 60" stroke="rgba(255,255,255,0.6)" stroke-width="2" fill="none"/>
+  
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8B5CF6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#EC4899;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F472B6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#EF4444;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F97316;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

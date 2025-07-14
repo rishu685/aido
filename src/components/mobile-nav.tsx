@@ -17,8 +17,8 @@ export function MobileNav() {
     >
       <div className="relative z-20 grid gap-6 rounded-2xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg p-6 shadow-2xl border border-gray-200/50 dark:border-gray-700/50">
         <Link href="/" className="flex items-center space-x-3">
-          <Image src="/logo.png" width={32} height={32} alt="Logo" className="rounded-full" />
-          <span className="font-bold text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <Image src="/medical-logo.svg" width={36} height={36} alt="Logo" className="rounded-full shadow-lg" />
+          <span className="font-bold text-xl bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
             MediMind
           </span>
         </Link>
@@ -26,17 +26,17 @@ export function MobileNav() {
         <nav className="grid gap-4">
           <Link 
             href="/query" 
-            className="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200"
+            className="flex items-center space-x-3 p-3 rounded-xl hover:bg-blue-500/10 transition-all duration-200 hover:scale-105"
           >
-            <MessagesSquare className="h-5 w-5 text-blue-600" />
+            <MessagesSquare className="h-5 w-5 text-blue-400" />
             <span className="font-medium">Medical Queries</span>
           </Link>
           
           <Link 
             href="/support" 
-            className="flex items-center space-x-3 p-3 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors duration-200"
+            className="flex items-center space-x-3 p-3 rounded-xl hover:bg-purple-500/10 transition-all duration-200 hover:scale-105"
           >
-            <HeartPulse className="h-5 w-5 text-purple-600" />
+            <HeartPulse className="h-5 w-5 text-purple-400" />
             <span className="font-medium">Mental Health Support</span>
           </Link>
         </nav>

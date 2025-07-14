@@ -250,21 +250,21 @@ function Chat({
   return (
     <div className="w-[350px] max-w-xl flex-grow overflow-hidden p-1 lg:w-[450px]">
       {/* Chat Header */}
-      <div className="flex items-center space-x-3 mb-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border border-blue-200/50 dark:border-blue-700/50">
-        <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full">
+      <div className="flex items-center space-x-3 mb-4 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl border border-blue-400/20 backdrop-blur-sm">
+        <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-lg">
           <Bot className="h-5 w-5 text-white" />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white">MediMind</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Healthcare AI Assistant</p>
+          <h3 className="font-bold text-white">MediMind</h3>
+          <p className="text-sm text-gray-300">Healthcare AI Assistant</p>
         </div>
         <div className="ml-auto">
-          <Sparkles className="h-5 w-5 text-blue-500 animate-pulse" />
+          <Sparkles className="h-6 w-6 text-blue-400 animate-pulse" />
         </div>
       </div>
 
       {/* Messages Container */}
-      <div className="mb-4 h-96 overflow-y-auto bg-gradient-to-b from-gray-50/50 to-white/50 dark:from-gray-800/50 dark:to-gray-900/50 rounded-lg p-3 border border-gray-200/50 dark:border-gray-700/50">
+      <div className="mb-4 h-96 overflow-y-auto bg-gradient-to-b from-gray-800/30 to-gray-900/50 rounded-xl p-4 border border-gray-700/30 backdrop-blur-sm">
         {messages
           .filter((msg) => msg.type === type)
           .map((msg, index) => (
@@ -277,14 +277,14 @@ function Chat({
               <div
                 className={`${
                   msg.author === "user"
-                    ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white ml-12"
-                    : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 mr-12 border border-gray-200 dark:border-gray-700"
-                } max-w-[85%] rounded-2xl p-4 shadow-lg`}
+                    ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white ml-12 shadow-blue-500/25"
+                    : "bg-gray-800/80 backdrop-blur-sm text-gray-100 mr-12 border border-gray-600/50 shadow-lg"
+                } max-w-[85%] rounded-2xl p-4 shadow-xl`}
               >
                 {msg.author === "bot" && (
                   <div className="flex items-center space-x-2 mb-2">
-                    <Bot className="h-4 w-4 text-blue-500" />
-                    <span className="text-xs font-medium text-blue-600 dark:text-blue-400">MediMind</span>
+                    <Bot className="h-4 w-4 text-blue-400" />
+                    <span className="text-xs font-medium text-blue-400">MediMind</span>
                   </div>
                 )}
                 <div
@@ -303,13 +303,13 @@ function Chat({
 
       {/* Follow-up Questions */}
       {followUp.length != 0 && (
-        <div className="no-scrollbar overflow-x-auto whitespace-nowrap border-t border-gray-200 dark:border-gray-700 py-3 mb-3">
+        <div className="no-scrollbar overflow-x-auto whitespace-nowrap border-t border-gray-600/30 py-3 mb-3">
           <div className="flex space-x-2">
             {followUp.map((followUpText, index) => (
               <button
                 key={index}
                 onClick={() => handleFollowUpClick(followUpText)}
-                className="inline-block cursor-pointer rounded-full bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 px-4 py-2 text-sm hover:from-blue-200 hover:to-purple-200 dark:hover:from-blue-800/40 dark:hover:to-purple-800/40 transition-all duration-200 border border-blue-200/50 dark:border-blue-700/50 whitespace-nowrap"
+                className="inline-block cursor-pointer rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 px-4 py-2 text-sm hover:from-blue-500/30 hover:to-purple-500/30 transition-all duration-200 border border-blue-400/30 whitespace-nowrap text-gray-200 hover:text-white backdrop-blur-sm"
               >
                 {followUpText}
               </button>
@@ -319,7 +319,7 @@ function Chat({
       )}
 
       {/* Input Section */}
-      <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+      <div className="border-t border-gray-600/30 pt-4">
         <div className="flex items-end space-x-2 mb-3">
           <div className="flex-1">
             <Textarea
@@ -327,7 +327,7 @@ function Chat({
                 resize: "none",
               }}
               placeholder="Ask MediMind anything about your health..."
-              className="rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 transition-colors duration-200"
+              className="rounded-xl border-2 border-gray-600/50 focus:border-blue-400 bg-gray-800/50 backdrop-blur-sm transition-all duration-200 text-gray-100 placeholder:text-gray-400"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={async (e) => {
@@ -363,9 +363,9 @@ function Chat({
               }}
               className={`${
                 isRecording
-                  ? "bg-red-500 hover:bg-red-600"
-                  : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-              } rounded-full p-3`}
+                  ? "bg-red-500 hover:bg-red-600 shadow-red-500/25"
+                  : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-blue-500/25"
+              } rounded-full p-3 shadow-lg`}
             >
               {isRecording ? (
                 <X className="h-5 w-5" />
@@ -388,7 +388,7 @@ function Chat({
                 }
               }}
               disabled={message.length === 0}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-full p-3"
+              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-full p-3 shadow-lg shadow-blue-500/25 disabled:opacity-50"
             >
               <SendHorizontal className="h-5 w-5" />
             </Button>
@@ -402,7 +402,7 @@ function Chat({
             setSelectedLanguage(value as "en-US" | "hi" | "ja");
           }}
         >
-          <SelectTrigger className="w-full rounded-lg border-2 border-gray-200 dark:border-gray-700 focus:border-blue-500 dark:focus:border-blue-400">
+          <SelectTrigger className="w-full rounded-lg border-2 border-gray-600/50 focus:border-blue-400 bg-gray-800/50 backdrop-blur-sm text-gray-100">
             <SelectValue placeholder="Select a Language" />
           </SelectTrigger>
           <SelectContent>

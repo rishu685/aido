@@ -4,7 +4,7 @@ import { ThemeProvider } from "~/components/theme-provider";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
       <Component {...pageProps} />
     </ThemeProvider>
   );
