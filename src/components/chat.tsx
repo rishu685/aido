@@ -1,8 +1,7 @@
-import { Mic, SendHorizontal, X } from "lucide-react";
+import { Mic, SendHorizontal, X, Sparkles, Bot } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { Textarea } from "~/components/ui/textarea";
-import { api } from "~/utils/api";
 import { type AUTHOR, type CONVERSATION_TYPE } from "@prisma/client";
 import {
   Select,
@@ -32,35 +31,18 @@ function Chat({
 
   const [followUp, setFollowUp] = useState<string[]>([]);
 
-  const getAllMessages = api.conversation.getConversation.useQuery();
-  const createMessage = api.conversation.createConversation.useMutation({
-    onSuccess: () => {
-      setMessage("");
+  // Mock data for demo purposes since we removed authentication
+  const mockMessages = [
+    {
+      type: type,
+      author: "bot" as AUTHOR,
+      message: `Hello! I'm MediMind, your intelligent healthcare companion. How can I help you today?`,
     },
-  });
+  ];
 
   useEffect(() => {
-    if (getAllMessages.isSuccess) {
-      setMessages(
-        // eslint-disable-next-line
-        getAllMessages.data.map((msg) => {
-          return {
-            type: msg.type,
-            author: msg.author,
-            message: msg.message,
-          };
-        })
-      );
-    }
-  }, [getAllMessages.isSuccess]);
-
-  const createMes = (message: string, author: AUTHOR) => {
-    createMessage.mutate({
-      type,
-      author: author,
-      text: message,
-    });
-  };
+    setMessages(mockMessages);
+  }, [type]);
 
   const handleFollowUpClick = async (followUpText: string) => {
     setMessages((prev) => [
@@ -73,7 +55,6 @@ function Chat({
     ]);
     await sendToApi({ message: followUpText, isFollowUp: false });
     setMessage(followUpText);
-    createMes(followUpText, "user");
     setFollowUp([]);
     await sendToApi({
       message:
@@ -126,7 +107,7 @@ function Chat({
     isFollowUp: boolean;
   }) => {
     const context =
-      "You are 'Aido', a personal intelligent healthcare advisor. Your primary role is to provide accurate and reliable information in response to personal medical queries. You are knowledgeable about various medical topics and can offer advice based on trusted sources. When responding to queries, make sure to cite reliable sources that users can refer to for verification. For example, if a user asks, 'What are some common symptoms of a cold?' you can respond with: 'Hello! Common symptoms of a cold include a runny or stuffy nose, sneezing, sore throat, and mild body aches. You can verify this information from reputable sources such as the Centers for Disease Control and Prevention (CDC) or the Mayo Clinic.' Feel free to use authoritative medical sources such as medical journals, official health organizations, and well-known medical websites to back up your responses. Remember to prioritize accuracy, empathy, and the well-being of the users seeking medical information.";
+      "You are 'MediMind', a personal intelligent healthcare advisor. Your primary role is to provide accurate and reliable information in response to personal medical queries. You are knowledgeable about various medical topics and can offer advice based on trusted sources. When responding to queries, make sure to cite reliable sources that users can refer to for verification. For example, if a user asks, 'What are some common symptoms of a cold?' you can respond with: 'Hello! Common symptoms of a cold include a runny or stuffy nose, sneezing, sore throat, and mild body aches. You can verify this information from reputable sources such as the Centers for Disease Control and Prevention (CDC) or the Mayo Clinic.' Feel free to use authoritative medical sources such as medical journals, official health organizations, and well-known medical websites to back up your responses. Remember to prioritize accuracy, empathy, and the well-being of the users seeking medical information.";
     const followUpContext =
       "Consider the previous question asked by the user and generate a list of possible follow-up questions that the current user might come up with. Each item in the list should start with an asterisk.";
 
@@ -172,7 +153,6 @@ function Chat({
           },
         ]);
         botConversationTrigger(JSON.stringify(translatedText)!);
-        createMes(JSON.stringify(translatedText), "bot");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -190,7 +170,7 @@ function Chat({
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, getAllMessages.isSuccess, createMessage.isSuccess]);
+  }, [messages]);
 
   const socketRef = useRef<WebSocket | null>(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -198,7 +178,6 @@ function Chat({
     "en-US" | "hi" | "ja"
   >("en-US");
   const [transcript, setTranscript] = useState<string[]>([]);
-  [];
 
   async function transcribe() {
     console.log("Started transcription");
@@ -260,7 +239,6 @@ function Chat({
       console.log(transcript, "dusfh");
 
       setMessage("");
-      // eslint-disable-next-line
       transcribe();
     } else {
       console.log(transcript);
@@ -269,108 +247,125 @@ function Chat({
     }
   }, [isRecording]);
 
-  const changeLang = api.user.changeLanguage.useMutation();
-  const getLang = api.user.getLanguage.useQuery();
-  useEffect(() => {
-    if (getLang.isSuccess) {
-      setSelectedLanguage(getLang.data as "en-US" | "hi" | "ja");
-    }
-  }, [getLang.isSuccess]);
-
   return (
-    <div className="w-[300px] max-w-xl flex-grow overflow-hidden p-1 lg:w-[400px]">
-      <div className="mb-4 h-96 overflow-y-auto bg-opacity-50 text-gray-600">
-        {(getAllMessages.isLoading || createMessage.isLoading) && (
-          <div className="flex h-full items-center justify-center">
-            <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-gray-900 dark:border-gray-100"></div>
-          </div>
-        )}
+    <div className="w-[350px] max-w-xl flex-grow overflow-hidden p-1 lg:w-[450px]">
+      {/* Chat Header */}
+      <div className="flex items-center space-x-3 mb-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border border-blue-200/50 dark:border-blue-700/50">
+        <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full">
+          <Bot className="h-5 w-5 text-white" />
+        </div>
+        <div>
+          <h3 className="font-semibold text-gray-900 dark:text-white">MediMind</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Healthcare AI Assistant</p>
+        </div>
+        <div className="ml-auto">
+          <Sparkles className="h-5 w-5 text-blue-500 animate-pulse" />
+        </div>
+      </div>
 
-        {!(getAllMessages.isLoading || createMessage.isLoading) &&
-          messages
-            .filter((msg) => msg.type === type)
-            .map((msg, index) => (
+      {/* Messages Container */}
+      <div className="mb-4 h-96 overflow-y-auto bg-gradient-to-b from-gray-50/50 to-white/50 dark:from-gray-800/50 dark:to-gray-900/50 rounded-lg p-3 border border-gray-200/50 dark:border-gray-700/50">
+        {messages
+          .filter((msg) => msg.type === type)
+          .map((msg, index) => (
+            <div
+              key={index}
+              className={`flex ${
+                msg.author === "user" ? "justify-end" : "justify-start"
+              } mb-4`}
+            >
               <div
-                key={index}
-                className={`flex ${
-                  msg.author === "user" ? "justify-end" : "justify-start"
-                } mt-2`}
+                className={`${
+                  msg.author === "user"
+                    ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white ml-12"
+                    : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 mr-12 border border-gray-200 dark:border-gray-700"
+                } max-w-[85%] rounded-2xl p-4 shadow-lg`}
               >
+                {msg.author === "bot" && (
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Bot className="h-4 w-4 text-blue-500" />
+                    <span className="text-xs font-medium text-blue-600 dark:text-blue-400">MediMind</span>
+                  </div>
+                )}
                 <div
-                  className={`${
-                    msg.author === "user"
-                      ? "self-end bg-blue-600 text-white"
-                      : "self-start bg-gray-200 text-gray-800"
-                  } max-w-[70%] rounded-lg p-2`}
+                  className={`text-sm leading-relaxed ${
+                    msg.author === "user" ? "text-white" : ""
+                  }`}
                   dangerouslySetInnerHTML={{
                     __html: msg.message.replace(/\n/g, "<br />"),
                   }}
                 ></div>
               </div>
-            ))}
+            </div>
+          ))}
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Follow-up Questions */}
       {followUp.length != 0 && (
-        <div className="no-scrollbar overflow-x-auto whitespace-nowrap border-t py-3">
-          {followUp.map((followUpText, index) => (
-            <span
-              key={index}
-              onClick={() => handleFollowUpClick(followUpText)}
-              className="m-1 inline-block cursor-pointer rounded-lg bg-slate-200 px-3 py-2 text-sm hover:bg-slate-100 dark:bg-slate-600 dark:hover:bg-slate-500"
-            >
-              {followUpText}
-            </span>
-          ))}
+        <div className="no-scrollbar overflow-x-auto whitespace-nowrap border-t border-gray-200 dark:border-gray-700 py-3 mb-3">
+          <div className="flex space-x-2">
+            {followUp.map((followUpText, index) => (
+              <button
+                key={index}
+                onClick={() => handleFollowUpClick(followUpText)}
+                className="inline-block cursor-pointer rounded-full bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 px-4 py-2 text-sm hover:from-blue-200 hover:to-purple-200 dark:hover:from-blue-800/40 dark:hover:to-purple-800/40 transition-all duration-200 border border-blue-200/50 dark:border-blue-700/50 whitespace-nowrap"
+              >
+                {followUpText}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
-      <div className="border-t py-3 ">
-        <div className="flex items-center">
-          <Textarea
-            style={{
-              resize: "none",
-            }}
-            disabled={getAllMessages.isLoading || createMessage.isLoading}
-            placeholder={
-              getAllMessages.isLoading || createMessage.isLoading
-                ? "Loading..."
-                : "Type a message..."
-            }
-            className="mr-2 rounded-l-lg border py-2 pr-10"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={async (e) => {
-              if (e.key === "Enter" && !e.shiftKey && message.trim() !== "") {
-                e.preventDefault();
-                setMessages((prev) => [
-                  ...prev,
-                  {
-                    type,
-                    author: "user",
-                    message,
-                  },
-                ]);
-                createMes(message, "user");
-                await handleSendToApi();
-              }
-            }}
-          />
-          <div className="flex flex-col space-y-1">
+      {/* Input Section */}
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+        <div className="flex items-end space-x-2 mb-3">
+          <div className="flex-1">
+            <Textarea
+              style={{
+                resize: "none",
+              }}
+              placeholder="Ask MediMind anything about your health..."
+              className="rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 transition-colors duration-200"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={async (e) => {
+                if (e.key === "Enter" && !e.shiftKey && message.trim() !== "") {
+                  e.preventDefault();
+                  setMessages((prev) => [
+                    ...prev,
+                    {
+                      type,
+                      author: "user",
+                      message,
+                    },
+                  ]);
+                  await handleSendToApi();
+                }
+              }}
+            />
+          </div>
+          <div className="flex flex-col space-y-2">
             <Button
               onClick={async () => {
                 if (isRecording) {
-                  socketRef.current?.close(),
-                    await navigator.mediaDevices
-                      .getUserMedia({ audio: true })
-                      .then((stream) => {
-                        stream.getTracks().forEach((track) => track.stop());
-                      });
+                  socketRef.current?.close();
+                  await navigator.mediaDevices
+                    .getUserMedia({ audio: true })
+                    .then((stream) => {
+                      stream.getTracks().forEach((track) => track.stop());
+                    });
                   setIsRecording(false);
                 } else {
                   setIsRecording(true);
                 }
               }}
+              className={`${
+                isRecording
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+              } rounded-full p-3`}
             >
               {isRecording ? (
                 <X className="h-5 w-5" />
@@ -389,39 +384,33 @@ function Chat({
                       message,
                     },
                   ]);
-                  createMes(message, "user");
                   await sendToApi({ message, isFollowUp: false });
                 }
               }}
-              disabled={
-                message.length === 0 ||
-                getAllMessages.isLoading ||
-                createMessage.isLoading
-              }
+              disabled={message.length === 0}
+              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-full p-3"
             >
               <SendHorizontal className="h-5 w-5" />
             </Button>
           </div>
         </div>
+        
+        {/* Language Selector */}
         <Select
           value={selectedLanguage}
           onValueChange={(value) => {
             setSelectedLanguage(value as "en-US" | "hi" | "ja");
-            changeLang.mutate({
-              language: value as "en-US" | "hi" | "ja",
-            });
           }}
-          disabled={changeLang.isLoading}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full rounded-lg border-2 border-gray-200 dark:border-gray-700 focus:border-blue-500 dark:focus:border-blue-400">
             <SelectValue placeholder="Select a Language" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Language</SelectLabel>
-              <SelectItem value="en-US">English</SelectItem>
-              <SelectItem value="hi">Hindi</SelectItem>
-              <SelectItem value="ja">Japanese</SelectItem>
+              <SelectItem value="en-US">🇺🇸 English</SelectItem>
+              <SelectItem value="hi">🇮🇳 Hindi</SelectItem>
+              <SelectItem value="ja">🇯🇵 Japanese</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
