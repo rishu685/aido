@@ -143,6 +143,8 @@ export default function Home() {
 }
 
 const Scene = () => {
+                }
+  )
   const viewport = useThree((state) => state.viewport);
   const texture = useTexture("/assets/textures/background2.jpg");
   return (
