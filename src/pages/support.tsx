@@ -143,12 +143,14 @@ export default function Home() {
 }
 
 const Scene = () => {
+                }
+  )
   const viewport = useThree((state) => state.viewport);
-  // Create a simple gradient background instead of loading texture
+  const texture = useTexture("/assets/textures/background2.jpg");
   return (
     <mesh>
       <planeGeometry args={[viewport.width, viewport.height]} />
-      <meshBasicMaterial color="#2d1b69" />
+      <meshBasicMaterial map={texture} />
     </mesh>
   );
 };

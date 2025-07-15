@@ -143,6 +143,8 @@ export default function Home() {
 }
 
 const Scene = () => {
+                }
+  )
   const viewport = useThree((state) => state.viewport);
   // Create a simple gradient background instead of loading texture
   return (
