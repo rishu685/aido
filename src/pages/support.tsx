@@ -84,7 +84,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="relative flex min-h-screen flex-col bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20">
-      <main className="relative flex min-h-screen flex-col bg-gradient-to-br from-gray-900 via-purple-900/30 to-pink-900/30">
+      <div className="relative flex min-h-screen flex-col bg-gradient-to-br from-gray-900 via-purple-900/30 to-pink-900/30">
         <div className="flex-1">
           <Canvas shadows camera={{ position: [0, 0, 8], fov: 43 }}>
             <color attach="background" args={["#1e1b4b"]} />
@@ -137,20 +137,18 @@ export default function Home() {
             </Popover>
           </div>
         </div>
-      </main>
+      </div>
     </>
   );
 }
 
 const Scene = () => {
-                }
-  )
   const viewport = useThree((state) => state.viewport);
-  const texture = useTexture("/assets/textures/background2.jpg");
+  // Create a simple gradient background instead of loading texture
   return (
     <mesh>
       <planeGeometry args={[viewport.width, viewport.height]} />
-      <meshBasicMaterial map={texture} />
+      <meshBasicMaterial color="#2d1b69" />
     </mesh>
   );
 };
