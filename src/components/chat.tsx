@@ -1,422 +1,160 @@
-import { Mic, SendHorizontal, X, Sparkles, Bot } from "lucide-react";
-import { Button } from "~/components/ui/button";
-import { useEffect, useRef, useState } from "react";
-import { Textarea } from "~/components/ui/textarea";
-import { type AUTHOR, type CONVERSATION_TYPE } from "@prisma/client";
+import Head from "next/head";
+import { MainNav } from "~/components/navbar";
+import Chat from "~/components/chat";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "src/components/ui/select";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "src/components/ui/popover";
+import { Button } from "~/components/ui/button";
+import { MessageSquare, HeartPulse } from "lucide-react";
+import { Canvas } from "@react-three/fiber";
+import { Environment, OrbitControls, useTexture } from "@react-three/drei";
+import { useThree } from "@react-three/fiber";
+import Avatar from "src/components/3d/avatar2";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
-function Chat({
-  type,
-  botConversationTrigger,
-}: {
-  type: CONVERSATION_TYPE;
-  botConversationTrigger: (msg: string) => void;
-}) {
-  const [message, setMessage] = useState<string>("");
-  const [messages, setMessages] = useState<
-    {
-      type: CONVERSATION_TYPE;
-      author: AUTHOR;
-      message: string;
-    }[]
-  >([]);
+interface MessageQueue {
+  lipSync: object;
+  audio: HTMLAudioElement;
+}
 
-  const [followUp, setFollowUp] = useState<string[]>([]);
+export default function Home() {
+  const groupConfig = {
+    position: [0, -3, 5],
+    scale: 2,
+  };
+  const [messageQueue, setMessageQueue] = useState<MessageQueue[]>([]);
+  const botConversationTrigger = async (msg: string) => {
+    const url = `/api/speech?text=${encodeURIComponent(msg)}&gender=f`;
+    const blob = await (await fetch(url)).blob();
+    const audio = new Audio(URL.createObjectURL(blob));
+    const formData = new FormData();
+    formData.append("audio", new Blob([blob], { type: "audio/mpeg" }));
 
-  // Mock data for demo purposes since we removed authentication
-  const mockMessages = [
-    {
-      type: type,
-      author: "bot" as AUTHOR,
-      message: `Hello! I'm MediMind, your intelligent healthcare companion. How can I help you today?`,
-    },
-  ];
-
-  useEffect(() => {
-    setMessages(mockMessages);
-  }, [type]);
-
-  const handleFollowUpClick = async (followUpText: string) => {
-    setMessages((prev) => [
-      ...prev,
+    const { data } = await axios.post(
+      "https://vertexai-api-ar2ndw3szq-uc.a.run.app/convertToSpeech",
+      formData,
       {
-        type,
-        author: "user",
-        message: followUpText,
-      },
-    ]);
-    await sendToApi({ message: followUpText, isFollowUp: false });
-    setMessage(followUpText);
-    setFollowUp([]);
-    await sendToApi({
-      message:
-        "generate a list of possible follow up questions that the current user might come up with. Each item in the list should start with an asterisk.",
-      isFollowUp: true,
-    });
-  };
-
-  const handleSendToApi = async () => {
-    try {
-      await sendToApi({ message, isFollowUp: false });
-
-      await sendToApi({
-        message:
-          "for the below message what can be the follow-up questions, give a list of possible questions that a user might come up with. Each item in the list should start with an asterisk." +
-          messages[messages.length - 1]!.message,
-        isFollowUp: true,
-      });
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  const translateText = async (text: string) => {
-    try {
-      const response = await fetch(
-        `https://vertexai-api-ar2ndw3szq-uc.a.run.app/translate`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            message: text,
-            language: selectedLanguage,
-          }),
-        }
-      );
-      return await response.text();
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  const sendToApi = async ({
-    message,
-    isFollowUp,
-  }: {
-    message: string;
-    isFollowUp: boolean;
-  }) => {
-    const context =
-      "You are 'MediMind', a personal intelligent healthcare advisor. Your primary role is to provide accurate and reliable information in response to personal medical queries. You are knowledgeable about various medical topics and can offer advice based on trusted sources. When responding to queries, make sure to cite reliable sources that users can refer to for verification. For example, if a user asks, 'What are some common symptoms of a cold?' you can respond with: 'Hello! Common symptoms of a cold include a runny or stuffy nose, sneezing, sore throat, and mild body aches. You can verify this information from reputable sources such as the Centers for Disease Control and Prevention (CDC) or the Mayo Clinic.' Feel free to use authoritative medical sources such as medical journals, official health organizations, and well-known medical websites to back up your responses. Remember to prioritize accuracy, empathy, and the well-being of the users seeking medical information.";
-    const followUpContext =
-      "Consider the previous question asked by the user and generate a list of possible follow-up questions that the current user might come up with. Each item in the list should start with an asterisk.";
-
-    try {
-      const response = await fetch(
-        `https://vertexai-api-ar2ndw3szq-uc.a.run.app/${type.toLowerCase()}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            message,
-            context: isFollowUp ? followUpContext : context,
-            history: messages.map((msg) => {
-              return {
-                author: msg.author,
-                message: msg.message,
-              };
-            }),
-          }),
-        }
-      );
-
-      const text = await response.text();
-
-      if (isFollowUp) {
-        const translated = await translateText(text);
-        setFollowUp(
-          translated!
-            .trim()
-            .split("\n")
-            .map((question) => question.trim().substring(2))
-        );
-      } else {
-        const translatedText = await translateText(text);
-        setMessages((prev) => [
-          ...prev,
-          {
-            type,
-            author: "bot",
-            message: JSON.stringify(translatedText)!,
-          },
-        ]);
-        botConversationTrigger(JSON.stringify(translatedText)!);
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       }
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    );
+    setMessageQueue((prev) => [{ lipSync: data, audio: audio }, ...prev]);
   };
 
-  const messagesEndRef = useRef(null);
-
-  const scrollToBottom = () => {
-    if (messagesEndRef.current)
-      (messagesEndRef.current as HTMLDivElement).scrollIntoView({
-        behavior: "auto",
-      });
-  };
+  const [currentMessage, setCurrentMessage] = useState<MessageQueue | null>(
+    null
+  );
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (!currentMessage && messageQueue.length > 0) {
+      const { audio, lipSync } = messageQueue[0]!;
+      setCurrentMessage({ audio, lipSync });
 
-  const socketRef = useRef<WebSocket | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState<
-    "en-US" | "hi" | "ja"
-  >("en-US");
-  const [transcript, setTranscript] = useState<string[]>([]);
-
-  async function transcribe() {
-    console.log("Started transcription");
-    await navigator.mediaDevices
-      .getUserMedia({ audio: true })
-      .then((stream) => {
-        if (!MediaRecorder.isTypeSupported("audio/webm"))
-          return alert("Browser not supported");
-        const mediaRecorder = new MediaRecorder(stream, {
-          mimeType: "audio/webm",
-        });
-
-        const webSocketUrl =
-          selectedLanguage === "en-US"
-            ? "wss://api.deepgram.com/v1/listen?model=nova"
-            : `wss://api.deepgram.com/v1/listen?language=${selectedLanguage}`;
-
-        const socket = new WebSocket(webSocketUrl, [
-          "token",
-          process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY!,
-        ]);
-
-        socket.onopen = () => {
-          console.log({ event: "onopen" });
-          mediaRecorder.addEventListener("dataavailable", (event) => {
-            if (event.data.size > 0 && socket.readyState === 1) {
-              socket.send(event.data);
-            }
-          });
-          mediaRecorder.start(1000);
-        };
-
-        socket.onmessage = (message) => {
-          const received = message && JSON.parse(message?.data as string);
-          const transcript = received.channel?.alternatives[0]
-            .transcript as string;
-          setTranscript((prev) => {
-            if (!prev.some((item) => item === transcript)) {
-              return [...prev, transcript];
-            }
-            return prev;
-          });
-        };
-
-        socket.onclose = () => {
-          console.log({ event: "onclose" });
-        };
-
-        socket.onerror = (error) => {
-          console.log({ event: "onerror", error });
-        };
-
-        socketRef.current = socket;
+      audio.addEventListener("ended", () => {
+        setCurrentMessage(null);
+        setMessageQueue((prev) => prev.slice(1));
       });
-  }
-
-  useEffect(() => {
-    if (isRecording) {
-      console.log(transcript, "dusfh");
-
-      setMessage("");
-      transcribe();
-    } else {
-      console.log(transcript);
-      setMessage(transcript.join(" "));
-      setTranscript([]);
     }
-  }, [isRecording]);
+    if (
+      currentMessage?.audio &&
+      currentMessage.audio.ended &&
+      messageQueue.length > 0
+    ) {
+      const { audio, lipSync } = messageQueue[0]!;
+      setCurrentMessage({ audio, lipSync });
+      audio.addEventListener("ended", () => {
+        setCurrentMessage(null);
+        setMessageQueue((prev) => prev.slice(1));
+      });
+    }
+  }, [messageQueue]);
 
   return (
-    <div className="w-[350px] max-w-xl flex-grow overflow-hidden p-1 lg:w-[450px]">
-      {/* Chat Header */}
-      <div className="flex items-center space-x-3 mb-4 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl border border-blue-400/20 backdrop-blur-sm">
-        <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-lg">
-          <Bot className="h-5 w-5 text-white" />
-        </div>
-        <div>
-          <h3 className="font-bold text-white">MediMind</h3>
-          <p className="text-sm text-gray-300">Healthcare AI Assistant</p>
-        </div>
-        <div className="ml-auto">
-          <Sparkles className="h-6 w-6 text-blue-400 animate-pulse" />
-        </div>
-      </div>
-
-      {/* Messages Container */}
-      <div className="mb-4 h-96 overflow-y-auto bg-gradient-to-b from-gray-800/30 to-gray-900/50 rounded-xl p-4 border border-gray-700/30 backdrop-blur-sm">
-        {messages
-          .filter((msg) => msg.type === type)
-          .map((msg, index) => (
-            <div
-              key={index}
-              className={`flex ${
-                msg.author === "user" ? "justify-end" : "justify-start"
-              } mb-4`}
-            >
-              <div
-                className={`${
-                  msg.author === "user"
-                    ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white ml-12 shadow-blue-500/25"
-                    : "bg-gray-800/80 backdrop-blur-sm text-gray-100 mr-12 border border-gray-600/50 shadow-lg"
-                } max-w-[85%] rounded-2xl p-4 shadow-xl`}
-              >
-                {msg.author === "bot" && (
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Bot className="h-4 w-4 text-blue-400" />
-                    <span className="text-xs font-medium text-blue-400">MediMind</span>
-                  </div>
-                )}
-                <div
-                  className={`text-sm leading-relaxed ${
-                    msg.author === "user" ? "text-white" : ""
-                  }`}
-                  dangerouslySetInnerHTML={{
-                    __html: msg.message.replace(/\n/g, "<br />"),
-                  }}
-                ></div>
-              </div>
-            </div>
-          ))}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Follow-up Questions */}
-      {followUp.length != 0 && (
-        <div className="no-scrollbar overflow-x-auto whitespace-nowrap border-t border-gray-600/30 py-3 mb-3">
-          <div className="flex space-x-2">
-            {followUp.map((followUpText, index) => (
-              <button
-                key={index}
-                onClick={() => handleFollowUpClick(followUpText)}
-                className="inline-block cursor-pointer rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 px-4 py-2 text-sm hover:from-blue-500/30 hover:to-purple-500/30 transition-all duration-200 border border-blue-400/30 whitespace-nowrap text-gray-200 hover:text-white backdrop-blur-sm"
-              >
-                {followUpText}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Input Section */}
-      <div className="border-t border-gray-600/30 pt-4">
-        <div className="flex items-end space-x-2 mb-3">
-          <div className="flex-1">
-            <Textarea
-              style={{
-                resize: "none",
-              }}
-              placeholder="Ask MediMind anything about your health..."
-              className="rounded-xl border-2 border-gray-600/50 focus:border-blue-400 bg-gray-800/50 backdrop-blur-sm transition-all duration-200 text-gray-100 placeholder:text-gray-400"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={async (e) => {
-                if (e.key === "Enter" && !e.shiftKey && message.trim() !== "") {
-                  e.preventDefault();
-                  setMessages((prev) => [
-                    ...prev,
-                    {
-                      type,
-                      author: "user",
-                      message,
-                    },
-                  ]);
-                  await handleSendToApi();
-                }
-              }}
-            />
-          </div>
-          <div className="flex flex-col space-y-2">
-            <Button
-              onClick={async () => {
-                if (isRecording) {
-                  socketRef.current?.close();
-                  await navigator.mediaDevices
-                    .getUserMedia({ audio: true })
-                    .then((stream) => {
-                      stream.getTracks().forEach((track) => track.stop());
-                    });
-                  setIsRecording(false);
-                } else {
-                  setIsRecording(true);
-                }
-              }}
-              className={`${
-                isRecording
-                  ? "bg-red-500 hover:bg-red-600 shadow-red-500/25"
-                  : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-blue-500/25"
-              } rounded-full p-3 shadow-lg`}
-            >
-              {isRecording ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Mic className="h-5 w-5" />
-              )}
-            </Button>
-            <Button
-              onClick={async () => {
-                if (message.trim() !== "") {
-                  setMessages((prev) => [
-                    ...prev,
-                    {
-                      type,
-                      author: "user",
-                      message,
-                    },
-                  ]);
-                  await sendToApi({ message, isFollowUp: false });
-                }
-              }}
-              disabled={message.length === 0}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-full p-3 shadow-lg shadow-blue-500/25 disabled:opacity-50"
-            >
-              <SendHorizontal className="h-5 w-5" />
-            </Button>
-          </div>
+    <>
+      <Head>
+        <title>MediMind - Mental Health Support</title>
+        <meta
+          name="description"
+          content="Get mental health support, coping strategies, and emotional guidance from MediMind, your compassionate AI healthcare companion."
+        />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <main className="relative flex min-h-screen flex-col bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20">
+      <div className="relative flex min-h-screen flex-col bg-gradient-to-br from-gray-900 via-purple-900/30 to-pink-900/30">
+        <div className="flex-1">
+          <Canvas 
+            shadows 
+            camera={{ position: [0, 0, 8], fov: 43 }}
+            fallback={<div className="flex items-center justify-center h-full text-white">Loading 3D Avatar...</div>}
+          >
+            <color attach="background" args={["#1e1b4b"]} />
+            <OrbitControls />
+            <React.Suspense fallback={null}>
+              <Avatar currentMessage={currentMessage} groupConfig={groupConfig} />
+            </React.Suspense>
+            <Environment preset="apartment" />
+            <Scene />
+          </Canvas>
         </div>
         
-        {/* Language Selector */}
-        <Select
-          value={selectedLanguage}
-          onValueChange={(value) => {
-            setSelectedLanguage(value as "en-US" | "hi" | "ja");
-          }}
-        >
-          <SelectTrigger className="w-full rounded-lg border-2 border-gray-600/50 focus:border-blue-400 bg-gray-800/50 backdrop-blur-sm text-gray-100">
-            <SelectValue placeholder="Select a Language" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Language</SelectLabel>
-              <SelectItem value="en-US">🇺🇸 English</SelectItem>
-              <SelectItem value="hi">🇮🇳 Hindi</SelectItem>
-              <SelectItem value="ja">🇯🇵 Japanese</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <div className="absolute left-0 top-0 w-full">
+          <MainNav />
+          <div className="flex-grow overflow-y-auto p-6">
+            <div className="max-w-4xl mx-auto text-center">
+              <div className="flex items-center justify-center mb-4">
+                <div className="flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full shadow-2xl shadow-purple-500/25">
+                  <HeartPulse className="h-8 w-8 text-white" />
+                </div>
+              </div>
+              <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
+                Mental Health Support
+              </h1>
+              <p className="text-xl text-gray-200 mb-3">
+                Compassionate support for your mental wellness journey
+              </p>
+              <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed">
+                Share your feelings with MediMind and receive coping strategies, relaxation techniques, 
+                and emotional support in a safe, judgment-free environment.
+              </p>
+            </div>
+          </div>
+          
+          <div className="fixed bottom-6 right-6">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button 
+                  size="lg"
+                  className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white shadow-2xl shadow-purple-500/25 hover:shadow-purple-500/40 transform hover:scale-110 transition-all duration-300 rounded-full px-8 py-4 text-lg border border-purple-400/20"
+                >
+                  <MessageSquare className="mr-2 h-5 w-5" /> 
+                  Talk to MediMind
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="mb-2 w-full bg-gray-900/95 backdrop-blur-lg border-2 border-purple-400/30 shadow-2xl shadow-purple-500/10 rounded-2xl">
+                <Chat
+                  type="Support"
+                  botConversationTrigger={botConversationTrigger}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
-export default Chat;
+const Scene = () => {
+  const viewport = useThree((state) => state.viewport);
+  // Create a simple gradient background instead of loading texture
+  return (
+    <mesh>
+      <planeGeometry args={[viewport.width, viewport.height]} />
+      <meshBasicMaterial color="#1e1b4b" />
+    </mesh>
+  );
+};

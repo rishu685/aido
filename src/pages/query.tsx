@@ -7,11 +7,11 @@ import {
   PopoverTrigger,
 } from "src/components/ui/popover";
 import { Button } from "~/components/ui/button";
-import { MessageSquare, Stethoscope, Brain } from "lucide-react";
+import { MessageSquare, HeartPulse } from "lucide-react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, OrbitControls, useTexture } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
-import Avatar from "src/components/3d/avatar1";
+import Avatar from "src/components/3d/avatar2";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -27,7 +27,7 @@ export default function Home() {
   };
   const [messageQueue, setMessageQueue] = useState<MessageQueue[]>([]);
   const botConversationTrigger = async (msg: string) => {
-    const url = `/api/speech?text=${encodeURIComponent(msg)}`;
+    const url = `/api/speech?text=${encodeURIComponent(msg)}&gender=f`;
     const blob = await (await fetch(url)).blob();
     const audio = new Audio(URL.createObjectURL(blob));
     const formData = new FormData();
@@ -71,27 +71,27 @@ export default function Home() {
         setMessageQueue((prev) => prev.slice(1));
       });
     }
-  }, [messageQueue, currentMessage]);
+  }, [messageQueue]);
 
   return (
     <>
       <Head>
-        <title>MediMind - Medical Queries</title>
+        <title>MediMind - Mental Health Support</title>
         <meta
           name="description"
-          content="Get reliable medical information and health advice from MediMind, your intelligent healthcare companion with interactive 3D guidance."
+          content="Get mental health support, coping strategies, and emotional guidance from MediMind, your compassionate AI healthcare companion."
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="relative flex min-h-screen flex-col bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900">
-      <div className="relative flex min-h-screen flex-col bg-gradient-to-br from-gray-900 via-slate-900 to-blue-900">
+      <main className="relative flex min-h-screen flex-col bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20">
+      <div className="relative flex min-h-screen flex-col bg-gray-900">
         <div className="flex-1">
           <Canvas 
             shadows 
             camera={{ position: [0, 0, 8], fov: 43 }}
             fallback={<div className="flex items-center justify-center h-full text-white">Loading 3D Avatar...</div>}
           >
-            <color attach="background" args={["#0f172a"]} />
+            <color attach="background" args={["#111827"]} />
             <OrbitControls />
             <React.Suspense fallback={null}>
               <Avatar currentMessage={currentMessage} groupConfig={groupConfig} />
@@ -106,19 +106,19 @@ export default function Home() {
           <div className="flex-grow overflow-y-auto p-6">
             <div className="max-w-4xl mx-auto text-center">
               <div className="flex items-center justify-center mb-4">
-                <div className="flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-2xl shadow-blue-500/25">
-                  <Stethoscope className="h-8 w-8 text-white" />
+                <div className="flex items-center justify-center w-16 h-16 bg-purple-600 rounded-full">
+                  <HeartPulse className="h-8 w-8 text-white" />
                 </div>
               </div>
-              <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-4">
-                Medical Query Assistant
+              <h1 className="text-3xl lg:text-4xl font-bold text-white mb-3">
+                Mental Health Support
               </h1>
-              <p className="text-xl text-gray-200 mb-3">
-                Get accurate medical information with trusted source citations
+              <p className="text-lg text-gray-300 mb-2">
+                Compassionate support for your mental wellness journey
               </p>
-              <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                Ask MediMind about symptoms, conditions, treatments, and general health questions. 
-                All responses include references to authoritative medical sources.
+              <p className="text-gray-400 max-w-xl mx-auto text-sm">
+                Share your feelings with MediMind and receive coping strategies, relaxation techniques, 
+                and emotional support in a safe, judgment-free environment.
               </p>
             </div>
           </div>
@@ -128,15 +128,15 @@ export default function Home() {
               <PopoverTrigger asChild>
                 <Button 
                   size="lg"
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-2xl shadow-blue-500/25 hover:shadow-blue-500/40 transform hover:scale-110 transition-all duration-300 rounded-full px-8 py-4 text-lg border border-blue-400/20"
+                  className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white shadow-2xl shadow-purple-500/25 hover:shadow-purple-500/40 transform hover:scale-110 transition-all duration-300 rounded-full px-8 py-4 text-lg border border-purple-400/20"
                 >
                   <MessageSquare className="mr-2 h-5 w-5" /> 
-                  Chat with MediMind
+                  Talk to MediMind
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="mb-2 w-full bg-gray-900/95 backdrop-blur-lg border-2 border-blue-400/30 shadow-2xl shadow-blue-500/10 rounded-2xl">
+              <PopoverContent className="mb-2 w-full bg-gray-900/95 backdrop-blur-lg border-2 border-purple-400/30 shadow-2xl shadow-purple-500/10 rounded-2xl">
                 <Chat
-                  type="Query"
+                  type="Support"
                   botConversationTrigger={botConversationTrigger}
                 />
               </PopoverContent>
@@ -156,7 +156,7 @@ const Scene = () => {
   return (
     <mesh>
       <planeGeometry args={[viewport.width, viewport.height]} />
-      <meshBasicMaterial color="#1e293b" />
+      <meshBasicMaterial color="#1e1b4b" />
     </mesh>
   );
 };
