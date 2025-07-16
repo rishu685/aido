@@ -86,10 +86,16 @@ export default function Home() {
       <main className="relative flex min-h-screen flex-col bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20">
       <div className="relative flex min-h-screen flex-col bg-gradient-to-br from-gray-900 via-purple-900/30 to-pink-900/30">
         <div className="flex-1">
-          <Canvas shadows camera={{ position: [0, 0, 8], fov: 43 }}>
+          <Canvas 
+            shadows 
+            camera={{ position: [0, 0, 8], fov: 43 }}
+            fallback={<div className="flex items-center justify-center h-full text-white">Loading 3D Avatar...</div>}
+          >
             <color attach="background" args={["#1e1b4b"]} />
             <OrbitControls />
-            <Avatar currentMessage={currentMessage} groupConfig={groupConfig} />
+            <React.Suspense fallback={null}>
+              <Avatar currentMessage={currentMessage} groupConfig={groupConfig} />
+            </React.Suspense>
             <Environment preset="apartment" />
             <Scene />
           </Canvas>
@@ -143,14 +149,12 @@ export default function Home() {
 }
 
 const Scene = () => {
-                }
-  )
   const viewport = useThree((state) => state.viewport);
-  const texture = useTexture("/assets/textures/background2.jpg");
+  // Create a simple gradient background instead of loading texture
   return (
     <mesh>
       <planeGeometry args={[viewport.width, viewport.height]} />
-      <meshBasicMaterial map={texture} />
+      <meshBasicMaterial color="#1e1b4b" />
     </mesh>
   );
 };

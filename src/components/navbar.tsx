@@ -16,13 +16,9 @@ export function MainNav() {
         <Link href="/" className="flex items-center space-x-3 group">
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full blur-lg opacity-40 group-hover:opacity-60 transition-all duration-300 animate-pulse"></div>
-            <Image 
-              src="/medical-logo.svg" 
-              width={45} 
-              height={45} 
-              alt="Logo" 
-              className="relative rounded-full shadow-2xl transform group-hover:scale-110 transition-transform duration-300"
-            />
+            <div className="relative w-[45px] h-[45px] bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-2xl transform group-hover:scale-110 transition-transform duration-300 flex items-center justify-center">
+              <span className="text-white font-bold text-lg">M</span>
+            </div>
           </div>
           <div className="flex flex-col">
             <span className="font-bold text-xl bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">

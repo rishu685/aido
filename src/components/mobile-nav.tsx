@@ -17,7 +17,9 @@ export function MobileNav() {
     >
       <div className="relative z-20 grid gap-6 rounded-2xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg p-6 shadow-2xl border border-gray-200/50 dark:border-gray-700/50">
         <Link href="/" className="flex items-center space-x-3">
-          <Image src="/medical-logo.svg" width={36} height={36} alt="Logo" className="rounded-full shadow-lg" />
+          <div className="w-[36px] h-[36px] bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-lg flex items-center justify-center">
+            <span className="text-white font-bold">M</span>
+          </div>
           <span className="font-bold text-xl bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
             MediMind
           </span>

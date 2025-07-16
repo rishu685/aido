@@ -1,17 +1,25 @@
 import type { NextPage } from "next";
+import React from "react";
 import { Canvas } from "@react-three/fiber";
-import { Environment, OrbitControls, useTexture } from "@react-three/drei";
+import { Environment, OrbitControls } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import Avatar from "src/components/3d/avatar1";
+
 const Test: NextPage = ({}) => {
   return (
     <div>
-      <Canvas shadows camera={{ position: [0, 0, 8], fov: 43 }}>
+      <Canvas 
+        shadows 
+        camera={{ position: [0, 0, 8], fov: 43 }}
+        fallback={<div className="flex items-center justify-center h-full">Loading...</div>}
+      >
         <color attach="background" args={["#ececec"]} />
         <OrbitControls />
-        <Avatar position={[0, -3, 5]} scale={2} />
+        <React.Suspense fallback={null}>
+          <Avatar position={[0, -3, 5]} scale={2} />
+        </React.Suspense>
         <Environment preset="apartment" />
-        <Scean />
+        <Scene />
       </Canvas>
     </div>
   );
@@ -19,13 +27,13 @@ const Test: NextPage = ({}) => {
 
 export default Test;
 
-const Scean = () => {
+const Scene = () => {
   const viewport = useThree((state) => state.viewport);
-  const texture = useTexture("/assets/textures/background1.jpg");
+  // Create a simple gradient background instead of loading texture
   return (
     <mesh>
       <planeGeometry args={[viewport.width, viewport.height]} />
-      <meshBasicMaterial map={texture} />
+      <meshBasicMaterial color="#ececec" />
     </mesh>
   );
 };
