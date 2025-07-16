@@ -7,6 +7,13 @@ await import("./src/env.mjs");
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
+  transpilePackages: [
+    "@radix-ui/react-dropdown-menu",
+    "@radix-ui/react-popover", 
+    "@radix-ui/react-select",
+    "@radix-ui/react-slot",
+    "@radix-ui/react-context"
+  ],
 
   /**
    * If you are using `appDir` then you must comment the below `i18n` config out.
