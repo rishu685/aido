@@ -84,14 +84,14 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="relative flex min-h-screen flex-col bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20">
-      <div className="relative flex min-h-screen flex-col bg-gradient-to-br from-gray-900 via-purple-900/30 to-pink-900/30">
+      <div className="relative flex min-h-screen flex-col bg-gray-900">
         <div className="flex-1">
           <Canvas 
             shadows 
             camera={{ position: [0, 0, 8], fov: 43 }}
             fallback={<div className="flex items-center justify-center h-full text-white">Loading 3D Avatar...</div>}
           >
-            <color attach="background" args={["#1e1b4b"]} />
+            <color attach="background" args={["#111827"]} />
             <OrbitControls />
             <React.Suspense fallback={null}>
               <Avatar currentMessage={currentMessage} groupConfig={groupConfig} />
@@ -106,17 +106,17 @@ export default function Home() {
           <div className="flex-grow overflow-y-auto p-6">
             <div className="max-w-4xl mx-auto text-center">
               <div className="flex items-center justify-center mb-4">
-                <div className="flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full shadow-2xl shadow-purple-500/25">
+                <div className="flex items-center justify-center w-16 h-16 bg-purple-600 rounded-full">
                   <HeartPulse className="h-8 w-8 text-white" />
                 </div>
               </div>
-              <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
+              <h1 className="text-3xl lg:text-4xl font-bold text-white mb-3">
                 Mental Health Support
               </h1>
-              <p className="text-xl text-gray-200 mb-3">
+              <p className="text-lg text-gray-300 mb-2">
                 Compassionate support for your mental wellness journey
               </p>
-              <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-gray-400 max-w-xl mx-auto text-sm">
                 Share your feelings with MediMind and receive coping strategies, relaxation techniques, 
                 and emotional support in a safe, judgment-free environment.
               </p>
