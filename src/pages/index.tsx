@@ -26,23 +26,41 @@ export default function Home() {
     scale: 2,
   };
   const [messageQueue, setMessageQueue] = useState<MessageQueue[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  
   const botConversationTrigger = async (msg: string) => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+    
+    try {
     const url = `/api/speech?text=${encodeURIComponent(msg)}&gender=f`;
     const blob = await (await fetch(url)).blob();
     const audio = new Audio(URL.createObjectURL(blob));
     const formData = new FormData();
     formData.append("audio", new Blob([blob], { type: "audio/mpeg" }));
 
-    const { data } = await axios.post(
-      "https://vertexai-api-ar2ndw3szq-uc.a.run.app/convertToSpeech",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      try {
+        const { data } = await axios.post(
+          "https://vertexai-api-ar2ndw3szq-uc.a.run.app/convertToSpeech",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+            timeout: 10000, // 10 second timeout
+          }
+        );
+        setMessageQueue((prev) => [{ lipSync: data, audio: audio }, ...prev]);
+      } catch (lipSyncError) {
+        console.warn("Lip sync service unavailable, playing audio without lip sync");
+        // Play audio without lip sync if the service is down
+        setMessageQueue((prev) => [{ lipSync: { mouthCues: [] }, audio: audio }, ...prev]);
       }
-    );
-    setMessageQueue((prev) => [{ lipSync: data, audio: audio }, ...prev]);
+    } catch (error) {
+      console.error("Speech generation failed:", error);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const [currentMessage, setCurrentMessage] = useState<MessageQueue | null>(
